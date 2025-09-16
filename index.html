@@ -12,12 +12,6 @@
     <script src="https://js.onclckmn.com/static/onclicka.js"></script>
     <!-- Adexium Ads Script -->
     <script type="text/javascript" src="https://cdn.tgads.space/assets/js/adexium-widget.min.js"></script>
-    <script type="text/javascript">
-        document.addEventListener('DOMContentLoaded', () => {
-            const adexiumWidget = new AdexiumWidget({wid: '5bc711dc-f3fa-4083-918d-0304c510c77f', adFormat: 'interstitial'});
-            adexiumWidget.autoMode();
-        });
-    </script>
     <style>
         :root {
             --primary: #FF7A00;
@@ -1040,6 +1034,7 @@
         let currentUserId = null;
         let currentUserData = null;
         let currentAdProvider = null;
+        let adexiumWidget = null;
         
         // Initialize user data with localStorage
         function initUserData(userId) {
@@ -1146,6 +1141,36 @@
             }
         }
         
+        // Initialize Adexium Ads
+        function initAdexiumAds() {
+            try {
+                if (typeof AdexiumWidget !== 'undefined') {
+                    adexiumWidget = new AdexiumWidget({
+                        wid: '5bc711dc-f3fa-4083-918d-0304c510c77f', 
+                        adFormat: 'interstitial'
+                    });
+                    console.log('Adexium Ads initialized successfully');
+                } else {
+                    console.warn('Adexium Ads script not loaded properly');
+                }
+            } catch (error) {
+                console.error('Error initializing Adexium Ads:', error);
+            }
+        }
+        
+        // Initialize OnClick Ads
+        function initOnClickAds() {
+            try {
+                if (typeof onclicka !== 'undefined') {
+                    console.log('OnClick Ads initialized successfully');
+                } else {
+                    console.warn('OnClick Ads script not loaded properly');
+                }
+            } catch (error) {
+                console.error('Error initializing OnClick Ads:', error);
+            }
+        }
+        
         // Telegram WebApp initialization
         function initTelegram() {
             if (window.Telegram && window.Telegram.WebApp) {
@@ -1186,6 +1211,10 @@
                 // Initialize with a test user ID
                 initUserData('7180886616');
             }
+            
+            // Initialize ad providers
+            initAdexiumAds();
+            initOnClickAds();
         }
         
         // Send message to admin via bot
@@ -1482,10 +1511,8 @@ Please process this withdrawal request.
                     // Use Adexium Ads implementation
                     try {
                         // Check if Adexium function exists
-                        if (typeof AdexiumWidget === 'function') {
-                            // Create a new instance and show ad
-                            const adexium = new AdexiumWidget({wid: '5bc711dc-f3fa-4083-918d-0304c510c77f', adFormat: 'interstitial'});
-                            adexium.showAd()
+                        if (adexiumWidget && typeof adexiumWidget.showAd === 'function') {
+                            adexiumWidget.showAd()
                                 .then(() => {
                                     // Ad completed successfully
                                     adCompleted();
